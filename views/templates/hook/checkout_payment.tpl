@@ -1,7 +1,7 @@
 <div class="g-payment-info">
     <div style="margin:10px 0px;">
         <span style="font-weight: 700; line-height: 24px;">{l s="Shop now pay later."}</span>
-        <a id="genoapay-popup" href="javascript:void(0)" target="_blank" style="text-decoration: underline; marigin-left: 5px; color: {$branding_color}">
+        <a id="{if $currency_code === 'NZD'}genoapay-popup{else if $currency_code === 'AUD'}latitudepay-popup{/if}" href="javascript:void(0)" target="_blank" style="text-decoration: underline; marigin-left: 5px; color: {$branding_color}">
             <span style="font-size: 11px;">{l s="Learn More"}</span>
         </a>
     </div>
@@ -14,7 +14,7 @@
 </div>
 
 {if $currency_code === 'NZD'}
-    {include file="../front/genoapay_payment_modal.tpl"}
+    {include file="$g_modal_path"}
 {else if $currency_code === 'AUD'}
-    {include file="../front/latitudepay_payment_modal.tpl"}
+    {include file="$lpay_modal_path"}
 {/if}

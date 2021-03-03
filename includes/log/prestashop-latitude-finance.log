@@ -102,3 +102,9 @@ Message: Invalid signature
 Message: Products with invalid name, quantity, currency, or price were found
 Invalid total amount (or currency)
 Invalid shipping lines found
+2021/03/03----05:54:53pm
+{"fc":"module","module":"latitude_official","controller":"return","id_lang":"1","token":"a5533104-4874-4e77-9c32-42dbdc2fbfee","reference":"ORRBKMIHB","message":"The customer cancelled the purchase.","result":"FAILED","signature":"68cd4f1b11bbe58410e60e6d497b29f1c3781859930544fd54a46d86a59836dd"}
+2021/03/03----05:55:55pm
+Message: Products with invalid name, quantity, currency, or price were found
+Invalid total amount (or currency)
+Invalid shipping lines found

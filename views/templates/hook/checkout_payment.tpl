@@ -6,7 +6,7 @@
         </a>
     </div>
 
-    <p style="margin-bottom: 10px;">{l s="10 weekly payments from "}<strong style="color:{$branding_color}">{$currency_code}{$currency_symbol}{$splited_payment}</strong></p>
+    <p style="margin-bottom: 10px;">{l s="10 weekly payments from "}<strong style="color:{$branding_color}">{$splited_payment}</strong></p>
 
     <p style="font-size: 22px; color:{$branding_color}; font-weight: 600; margin-bottom: 20px">{l s="No interest." mod="latitude_official" }<span style="text-decoration: underline; margin-left: 5px;">{l s="Ever." mod="latitude_official" }</span></p>
 

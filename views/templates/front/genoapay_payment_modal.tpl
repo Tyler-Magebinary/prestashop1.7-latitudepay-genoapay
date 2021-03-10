@@ -53,7 +53,7 @@
 <script>
     // Pure JS just in case if the merchant website is not using jQuery
     ;(function() {
-        var popupTrigger = document.querySelector('.g-payment-info, #genoapay-popup'),
+        var popupTrigger = document.getElementById('genoapay-popup'),
             popup        = document.getElementById('g-infomodal-container'),
             closeBtn     = document.getElementById('g-infomodal-close');
 

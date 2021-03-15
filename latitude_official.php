@@ -93,7 +93,7 @@ class Latitude_Official extends PaymentModule
     public $hooks = array(
         'header',
         'paymentOptions',
-        'displayProductButtons',
+        'displayProductPriceBlock',
         'displayPaymentReturn',
         'displayTop',
         'displayAdminOrderTabContent',
@@ -548,8 +548,11 @@ class Latitude_Official extends PaymentModule
         return $paymentLogo;
     }
 
-    public function hookDisplayProductButtons($params)
+    public function hookDisplayProductPriceBlock($params)
     {
+        if(!isset($params['type']) || $params['type'] !== "weight" || !$this->context->controller instanceof ProductController) {
+            return "";
+        }
         $currency = $this->context->currency;
         /** @var \PrestaShop\PrestaShop\Adapter\Presenter\Product\ProductLazyArray $product */
         $product = $params['product'];

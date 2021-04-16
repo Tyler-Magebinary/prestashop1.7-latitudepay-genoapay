@@ -85,6 +85,7 @@ class latitude_officialpaymentModuleFrontController extends ModuleFrontControlle
                 $this->errors[] = "Could not get the payment URL from payment gateway";
                 return false;
             }
+
             $reference  = $this->getReferenceNumber();
             // Save the reference for validation when response coming back from
             $cookie->reference = $reference;
@@ -133,7 +134,7 @@ class latitude_officialpaymentModuleFrontController extends ModuleFrontControlle
         } catch (Exception $e) {
             $message = $e->getMessage() ?: 'Something massively went wrong. Please try again. If the problem still exists, please contact us';
             PrestaShopLogger::addLog($message, 1, null, 'PaymentModule', (int)$cart->id, true);
-            BinaryPay::log($message, true, 'prestashop-latitude-finance.log');
+            BinaryPay::log($message, true, 'latitudepay-finance-' . date('Y-m-d') . '.log');
             $this->errors[] = $message;
         }
         return $purchaseUrl;
@@ -213,7 +214,7 @@ class latitude_officialpaymentModuleFrontController extends ModuleFrontControlle
         foreach ($items as $_item) {
             $_item = (object) $_item;
             $product_line_item = [
-                'name'          => preg_replace('/[^a-zA-Z0-9]/i', " ", $_item->name),
+                'name'          => htmlspecialchars($_item->name),
                 'price' => [
                     'amount'    => round($_item->total_wt, 2),
                     'currency'  => $currencyCode

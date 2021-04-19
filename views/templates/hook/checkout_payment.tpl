@@ -11,7 +11,7 @@
 
         <p style="font-size: 22px; color:{$branding_color}; font-weight: 600; margin-bottom: 20px">{l s="No interest." mod="latitude_official" }<span style="text-decoration: underline; margin-left: 5px;">{l s="Ever." mod="latitude_official" }</span></p>
 
-        <p style="font-weight: 600; font-size: 15px;">You will be redirected to the {$payment_name} website when you select Place Order.</p>
+        <p style="font-weight: 600; font-size: 15px;">You will be redirected to the {$gateway_name} website when you select Place Order.</p>
     </div>
     {include file="$g_modal_path"}
 {else if $currency_code === 'AUD'}

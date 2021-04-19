@@ -309,20 +309,26 @@ class Latitude_Official extends PaymentModule
     /**
      * Display order return block
      * @param $params
-     * @return mixed
+     * @return string|void
      */
     public function hookDisplayPaymentReturn($params)
     {
-        $this->context->smarty->assign(array(
-            'currency_code' => Context::getContext()->currency->iso_code,
-            'order_total_amount' => round($params['total_to_pay'], 2),
-            'payment_method' => $params['objOrder']->payment,
-            'email' => $params['cookie']->email,
-            'invoice_date' => $params['objOrder']->invoice_date,
-            'order_id' => Order::getUniqReferenceOf(Order::getOrderByCartId($params['objOrder']->id_cart))
-        ));
+        $order = isset($params['order']) ? $params['order'] : null;
+        if ($order) {
+            /**
+             * @var OrderCore $order
+             */
+            $this->context->smarty->assign(array(
+                'currency_code' => Context::getContext()->currency->iso_code,
+                'order_total_amount' => round($order->getTotalPaid(), 2),
+                'payment_method' => $order->payment,
+                'email' => $params['cookie']->email,
+                'invoice_date' => $order->invoice_date,
+                'order_id' => $order->getUniqReference()
+            ));
 
-        return $this->display(__FILE__, 'payment_return.tpl');
+            return $this->display(__FILE__, 'payment_return.tpl');
+        }
     }
 
     /**
@@ -575,53 +581,49 @@ class Latitude_Official extends PaymentModule
      */
     public function hookPaymentOptions($params)
     {
-        try {
-            $cartAmount = $params['cart']->getOrderTotal();
-            $currency = new Currency($params['cart']->id_currency);
-            $this->gatewayName = $this->getPaymentGatewayNameByCurrencyCode($currency->iso_code);
+        $cartAmount = $params['cart']->getOrderTotal();
+        $currency = new Currency($params['cart']->id_currency);
+        $this->gatewayName = $this->getPaymentGatewayNameByCurrencyCode($currency->iso_code);
 
-            if (!$this->active || !$this->isOrderAmountAvailable($cartAmount)) {
-                return [];
-            }
-
-            if (!$this->checkApiConnection()) {
-                $this->context->smarty->assign(array(
-                    'latitudeError' => $this->l(
-                        'No credentials have been provided for Latitude Finance. Please contact the owner of the website.',
-                        $this->name
-                    )
-                ));
-            }
-
-            $this->smarty->assign(array(
-                'this_path' => $this->_path,
-                'currency_code' => $currency->iso_code,
-                'currency_symbol' => $currency->getSymbol(),
-                'logo' => $this->getPaymentLogo(),
-                'payment_name' => $this->gatewayName,
-                'splited_payment' => $currency->sign . Tools::ps_round($cartAmount / 10, (int) $currency->decimals * _PS_PRICE_DISPLAY_PRECISION_),
-                'this_path_ssl' => Tools::getShopDomain(true, true) . __PS_BASE_URI__ . 'modules/'.$this->name.'/',
-                'amount' => $cartAmount,
-                'branding_color' => ($currency->iso_code === "AUD") ? "rgb(57, 112, 255)" : "rgb(49, 181, 156)",
-                'doc_link' => ($currency->iso_code === "AUD") ? 'https://www.latitudepay.com/how-it-works/' : 'https://www.genoapay.com/how-it-works/',
-                'base_dir' => Configuration::get('PS_SSL_ENABLED') ? _PS_BASE_URL_SSL_ : _PS_BASE_URL_ . __PS_BASE_URI__,
-                'current_module_uri' => $this->_path,
-                'g_modal_path' => _PS_MODULE_DIR_ . 'latitude_official/views/templates/front/genoapay_payment_modal.tpl',
-                'images_api_url' => Tools::getValue(self::LATITUDE_FINANCE_IMAGES_API_URL, self::DEFAULT_IMAGES_API_URL),
-                'full_block' => true
-            ));
-            $newOption = new PaymentOption();
-            $newOption->setModuleName($this->name)
-                ->setCallToActionText($this->trans($this->getPaymentGatewayNameByCurrencyCode($currency->iso_code)))
-                ->setAction($this->context->link->getModuleLink($this->name, 'payment', [], true))
-                ->setLogo($this->getPaymentLogo())
-                ->setAdditionalInformation(
-                    $this->fetch('module:latitude_official/views/templates/hook/checkout_payment.tpl')
-                );
-            return [$newOption];
-        } catch (\Exception $exception) {
-            die($exception->getMessage());
+        if (!$this->active || !$this->isOrderAmountAvailable($cartAmount)) {
+            return [];
         }
+
+        if (!$this->checkApiConnection()) {
+            $this->context->smarty->assign(array(
+                'latitudeError' => $this->l(
+                    'No credentials have been provided for Latitude Finance. Please contact the owner of the website.',
+                    $this->name
+                )
+            ));
+        }
+
+        $this->smarty->assign(array(
+            'this_path' => $this->_path,
+            'currency_code' => $currency->iso_code,
+            'currency_symbol' => $currency->getSymbol(),
+            'logo' => $this->getPaymentLogo(),
+            'gateway_name' => $this->gatewayName,
+            'splited_payment' => $currency->sign . Tools::ps_round($cartAmount / 10, (int) $currency->decimals * _PS_PRICE_DISPLAY_PRECISION_),
+            'this_path_ssl' => Tools::getShopDomain(true, true) . __PS_BASE_URI__ . 'modules/'.$this->name.'/',
+            'amount' => $cartAmount,
+            'branding_color' => ($currency->iso_code === "AUD") ? "rgb(57, 112, 255)" : "rgb(49, 181, 156)",
+            'doc_link' => ($currency->iso_code === "AUD") ? 'https://www.latitudepay.com/how-it-works/' : 'https://www.genoapay.com/how-it-works/',
+            'base_dir' => Configuration::get('PS_SSL_ENABLED') ? _PS_BASE_URL_SSL_ : _PS_BASE_URL_ . __PS_BASE_URI__,
+            'current_module_uri' => $this->_path,
+            'g_modal_path' => _PS_MODULE_DIR_ . 'latitude_official/views/templates/front/genoapay_payment_modal.tpl',
+            'images_api_url' => Tools::getValue(self::LATITUDE_FINANCE_IMAGES_API_URL, self::DEFAULT_IMAGES_API_URL),
+            'full_block' => true
+        ));
+        $newOption = new PaymentOption();
+        $newOption->setModuleName($this->name)
+            ->setCallToActionText($this->trans($this->getPaymentGatewayNameByCurrencyCode($currency->iso_code)))
+            ->setAction($this->context->link->getModuleLink($this->name, 'payment', [], true))
+            ->setLogo($this->getPaymentLogo())
+            ->setAdditionalInformation(
+                $this->fetch('module:latitude_official/views/templates/hook/checkout_payment.tpl')
+            );
+        return [$newOption];
     }
 
     /**

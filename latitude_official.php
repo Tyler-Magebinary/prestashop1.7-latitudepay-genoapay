@@ -154,6 +154,11 @@ class Latitude_Official extends PaymentModule
     /**
      * @var string
      */
+    const DEFAULT_IMAGES_API_VERSION = 'v2';
+
+    /**
+     * @var string
+     */
     protected $_html = '';
 
     /**
@@ -722,28 +727,16 @@ class Latitude_Official extends PaymentModule
         $gatewayName = $this->getPaymentGatewayNameByCurrencyCode($currencyCode);
 
         if ($gatewayName && $product->offsetGet('quantity')) {
-            $containerClass = "wc-latitudefinance-" . strtolower($gatewayName) . "-container";
-            $paymentInfo = $this->l("Available now.");
-
-            if ($price >= 20 && $price <= 1500) {
-                $weekly = round($price / 10, 2);
-                $paymentInfo = "10 weekly payments of " . "<strong>$" . "${weekly}" . "</strong>";
-            }
-
-            $color = ($gatewayName == "Latitudepay") ? "rgb(57, 112, 255)" : "rgb(49, 181, 156)";
-
             $this->smarty->assign(array(
-                'container_class' => $containerClass,
-                'color' => $color,
-                'gateway_name' => strtolower($gatewayName),
-                'payment_info' => $paymentInfo,
-                'amount' => $price,
-                'currency_code' => $currencyCode,
-                'payment_logo' => $this->getPaymentLogo(),
+                'services' => Configuration::get(self::LATITUDE_FINANCE_PRODUCT),
+                'payment_terms' => Configuration::get(self::LATITUDE_FINANCE_PAYMENT_TERMS),
                 'base_dir' => Configuration::get('PS_SSL_ENABLED') ? _PS_BASE_URL_SSL_ : _PS_BASE_URL_ . __PS_BASE_URI__,
                 'current_module_uri' => $this->_path,
                 'images_api_url' => Tools::getValue(self::LATITUDE_FINANCE_IMAGES_API_URL, self::DEFAULT_IMAGES_API_URL),
-                'full_block' => false
+                'images_api_version' => self::DEFAULT_IMAGES_API_VERSION,
+                'full_block' => false,
+                'amount' => $price,
+                'gateway_name' => $gatewayName
             ));
 
             return $this->display(__FILE__, 'product_latitude_finance.tpl');

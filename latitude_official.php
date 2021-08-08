@@ -59,6 +59,11 @@ class Latitude_Official extends PaymentModule
     /**
      * @var string
      */
+    const PRODUCT_GPAY = 'GPAY';
+
+    /**
+     * @var string
+     */
     const PAYMENT_TERM_6MONTHS = '6';
 
     /**
@@ -176,7 +181,6 @@ class Latitude_Official extends PaymentModule
      * @var array
      */
     public $hooks = array(
-        'header',
         'paymentOptions',
         'displayProductPriceBlock',
         'displayPaymentReturn',
@@ -205,7 +209,7 @@ class Latitude_Official extends PaymentModule
          */
         $this->tab = 'payments_gateways';
 
-        $this->version = '1.1';
+        $this->version = '1.2';
         $this->author = 'Latitude Financial Services';
 
         /**
@@ -340,16 +344,6 @@ class Latitude_Official extends PaymentModule
     }
 
     /**
-     * Append stylesheet files into template header
-     * @param $params
-     */
-    public function hookHeader($params)
-    {
-        $this->context->controller->addCSS($this->_path . '/views/css/genoapay.css');
-        $this->context->controller->addCSS($this->_path . '/views/css/latitudepay.css');
-    }
-
-    /**
      * Add refund script to backend template
      * @return null
      */
@@ -453,7 +447,7 @@ class Latitude_Official extends PaymentModule
 
             if ($gatewayName) {
                 $this->smarty->assign(array(
-                    'services' => Configuration::get(self::LATITUDE_FINANCE_PRODUCT),
+                    'services' => $this->getServices($gatewayName),
                     'payment_terms' => Configuration::get(self::LATITUDE_FINANCE_PAYMENT_TERMS),
                     'base_dir' => Configuration::get('PS_SSL_ENABLED') ? _PS_BASE_URL_SSL_ : _PS_BASE_URL_ . __PS_BASE_URI__,
                     'current_module_uri' => $this->_path,
@@ -464,7 +458,7 @@ class Latitude_Official extends PaymentModule
                     'gateway_name' => $gatewayName
                 ));
 
-                return $this->display(__FILE__, 'product_latitude_finance.tpl');
+                return $this->display(__FILE__, 'payment_snippet.tpl');
             }
         }
     }
@@ -686,21 +680,13 @@ class Latitude_Official extends PaymentModule
         }
 
         $this->smarty->assign(array(
-            'this_path' => $this->_path,
-            'currency_code' => $currency->iso_code,
-            'currency_symbol' => $currency->getSymbol(),
-            'logo' => $this->getPaymentLogo(),
             'gateway_name' => $this->gatewayName,
-            'splited_payment' => $currency->sign . Tools::ps_round($cartAmount / 10, (int) $currency->decimals * _PS_PRICE_DISPLAY_PRECISION_),
-            'this_path_ssl' => Tools::getShopDomain(true, true) . __PS_BASE_URI__ . 'modules/'.$this->name.'/',
             'amount' => $cartAmount,
-            'branding_color' => ($currency->iso_code === "AUD") ? "rgb(57, 112, 255)" : "rgb(49, 181, 156)",
-            'doc_link' => ($currency->iso_code === "AUD") ? 'https://www.latitudepay.com/how-it-works/' : 'https://www.genoapay.com/how-it-works/',
-            'base_dir' => Configuration::get('PS_SSL_ENABLED') ? _PS_BASE_URL_SSL_ : _PS_BASE_URL_ . __PS_BASE_URI__,
-            'current_module_uri' => $this->_path,
-            'g_modal_path' => _PS_MODULE_DIR_ . 'latitude_official/views/templates/front/genoapay_payment_modal.tpl',
+            'full_block' => true,
             'images_api_url' => Tools::getValue(self::LATITUDE_FINANCE_IMAGES_API_URL, self::DEFAULT_IMAGES_API_URL),
-            'full_block' => true
+            'images_api_version' => self::DEFAULT_IMAGES_API_VERSION,
+            'services' => $this->getServices($this->gatewayName),
+            'payment_terms' => Configuration::get(self::LATITUDE_FINANCE_PAYMENT_TERMS)
         ));
         $newOption = new PaymentOption();
         $newOption->setModuleName($this->name)
@@ -708,7 +694,7 @@ class Latitude_Official extends PaymentModule
             ->setAction($this->context->link->getModuleLink($this->name, 'payment', [], true))
             ->setLogo($this->getPaymentLogo())
             ->setAdditionalInformation(
-                $this->fetch('module:latitude_official/views/templates/hook/checkout_payment.tpl')
+                $this->fetch('module:latitude_official/views/templates/hook/payment_snippet.tpl')
             );
         return [$newOption];
     }
@@ -765,7 +751,7 @@ class Latitude_Official extends PaymentModule
                 'gateway_name' => $gatewayName
             ));
 
-            return $this->display(__FILE__, 'product_latitude_finance.tpl');
+            return $this->display(__FILE__, 'payment_snippet.tpl');
         }
     }
 
@@ -1431,5 +1417,14 @@ class Latitude_Official extends PaymentModule
         return in_array(Tools::getValue(self::LATITUDE_FINANCE_PRODUCT), [
             self::PRODUCT_LPAYPLUS, self::PRODUCT_CO_PRESENTMENT
         ]);
+    }
+
+    /**
+     * Get configured service
+     * @param $gatewayName
+     * @return false|string
+     */
+    private function getServices($gatewayName) {
+        return $gatewayName === self::GENOAPAY_PAYMENT_METHOD_CODE ? self::PRODUCT_GPAY : Configuration::get(self::LATITUDE_FINANCE_PRODUCT);
     }
 }

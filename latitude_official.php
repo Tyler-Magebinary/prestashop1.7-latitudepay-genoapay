@@ -728,7 +728,12 @@ class Latitude_Official extends PaymentModule
      */
     public function hookDisplayProductPriceBlock($params)
     {
-        if(!isset($params['type']) || $params['type'] !== "weight" || !$this->context->controller instanceof ProductController) {
+        if(
+            !isset($params['type']) ||
+            $params['type'] !== "weight" ||
+            !$this->context->controller instanceof ProductController ||
+            !isset($params['hook_origin'])
+        ) {
             return "";
         }
         $currency = $this->context->currency;

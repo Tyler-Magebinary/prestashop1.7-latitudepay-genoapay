@@ -442,24 +442,27 @@ class Latitude_Official extends PaymentModule
         $cart = isset($params['cart']) ? $params['cart'] : null;
         if ($cart) {
             $price = $cart->getOrderTotal();
-            $currencyCode = $this->context->currency->iso_code;
-            $gatewayName = $this->getPaymentGatewayNameByCurrencyCode($currencyCode);
+            if ($price >= $this->getMinOrderTotal()) {
+                $currencyCode = $this->context->currency->iso_code;
+                $gatewayName = $this->getPaymentGatewayNameByCurrencyCode($currencyCode);
 
-            if ($gatewayName) {
-                $this->smarty->assign(array(
-                    'services' => $this->getServices($gatewayName),
-                    'payment_terms' => Configuration::get(self::LATITUDE_FINANCE_PAYMENT_TERMS),
-                    'base_dir' => Configuration::get('PS_SSL_ENABLED') ? _PS_BASE_URL_SSL_ : _PS_BASE_URL_ . __PS_BASE_URI__,
-                    'current_module_uri' => $this->_path,
-                    'images_api_url' => Tools::getValue(self::LATITUDE_FINANCE_IMAGES_API_URL, self::DEFAULT_IMAGES_API_URL),
-                    'images_api_version' => self::DEFAULT_IMAGES_API_VERSION,
-                    'full_block' => false,
-                    'amount' => $price,
-                    'gateway_name' => $gatewayName
-                ));
+                if ($gatewayName) {
+                    $this->smarty->assign(array(
+                        'services' => $this->getServices($gatewayName),
+                        'payment_terms' => Configuration::get(self::LATITUDE_FINANCE_PAYMENT_TERMS),
+                        'base_dir' => Configuration::get('PS_SSL_ENABLED') ? _PS_BASE_URL_SSL_ : _PS_BASE_URL_ . __PS_BASE_URI__,
+                        'current_module_uri' => $this->_path,
+                        'images_api_url' => Tools::getValue(self::LATITUDE_FINANCE_IMAGES_API_URL, self::DEFAULT_IMAGES_API_URL),
+                        'images_api_version' => self::DEFAULT_IMAGES_API_VERSION,
+                        'full_block' => false,
+                        'amount' => $price,
+                        'gateway_name' => $gatewayName
+                    ));
 
-                return $this->display(__FILE__, 'payment_snippet.tpl');
+                    return $this->display(__FILE__, 'payment_snippet.tpl');
+                }
             }
+
         }
     }
 

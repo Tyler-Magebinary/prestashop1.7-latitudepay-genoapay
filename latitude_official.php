@@ -849,7 +849,7 @@ class Latitude_Official extends PaymentModule
                         'multiple' => true,
                         'label' => $this->l('Payment Terms'),
                         'name' => self::LATITUDE_FINANCE_PAYMENT_TERMS,
-                        'desc' => $this->l("The following payment terms will be displayed on your PDP Modal. Please check your contract to see what payment terms which will be offered to your customers"),
+                        'desc' => $this->l("Please note you can select more than one option by holding the CTRL(On Windows) or COMMAND (On MAC) and clicking on the payment terms you wish to add. The following payment terms will be displayed on your PDP Modal. Please check your contract to see what payment terms can be offered to your customers"),
                         'disabled' => $this->shouldDisplayPaymentTerms() ? false : true,
                         'options' => [
                             'query' => $this->getPaymentTerms(),

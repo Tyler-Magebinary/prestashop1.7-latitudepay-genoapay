@@ -1240,8 +1240,6 @@ class Latitude_Official extends PaymentModule
                 be processed unless there is a valid transaction associated with the order.', $order->id));
             }
             $response = $gateway->refund($refund);
-            // Log the refund response
-            BinaryPay::log(json_encode($response), true, 'latitudepay-finance-' . date('Y-m-d') . '.log');
             if (Configuration::get(self::LATITUDE_FINANCE_DEBUG_MODE)) {
                 if (isset($response['refundId'])) {
                     $message = "Refund ID: ".$response['refundId'];

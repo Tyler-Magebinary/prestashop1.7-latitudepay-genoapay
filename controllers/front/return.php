@@ -28,6 +28,13 @@ class latitude_officialreturnModuleFrontController extends ModuleFrontController
         // Add the validation
         $reference = Tools::getValue('reference');
 
+        if (Configuration::get(Latitude_Official::LATITUDE_FINANCE_DEBUG_MODE)) {
+            $logMessage = "======CALLBACK INFO STARTS======\n";
+            $logMessage .= json_encode(Tools::getAllValues(), JSON_PRETTY_PRINT);
+            $logMessage .= "\n======CALLBACK INFO ENDS======";
+            BinaryPay::log($logMessage, true, 'latitudepay-finance-' . date('Y-m-d') . '.log');
+        }
+
         if (!$this->context->cookie->reference || $this->context->cookie->reference !== $reference) {
             Tools::redirect(Context::getContext()->shop->getBaseURL(true));
         }
@@ -50,10 +57,6 @@ class latitude_officialreturnModuleFrontController extends ModuleFrontController
                 )
             );
         } else {
-            $message = (is_array($response)) ? json_encode($response) : 'Error response from Latitude Financial services API. The response data cannot be recorded.';
-            // record all the FAILED status order
-            // just in case we lose the response messages and transaction token ID
-            BinaryPay::log($message, true, 'prestashop-latitude-finance.log');
             $this->errors[] = Context::getContext()->getTranslator()->trans("Your purchase order has been cancelled.");
             $this->redirectWithNotifications('index.php?controller=order&step=1');
         }
@@ -71,8 +74,7 @@ class latitude_officialreturnModuleFrontController extends ModuleFrontController
      * @param  string $message
      * @return string
      */
-    protected function
-    translateErrorMessage($message)
+    protected function translateErrorMessage($message)
     {
         switch ($message) {
             case 'The customer cancelled the purchase.':

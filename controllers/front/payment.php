@@ -35,25 +35,24 @@ class latitude_officialpaymentModuleFrontController extends ModuleFrontControlle
         } catch (Exception $e) {
             $errors[] = Tools::displayError($e->getMessage());
             Tools::redirect('index.php?controller=order');
-
             return;
         }
     }
 
     /**
-     * get the payment checkout logo by the current currency
+     * Get the payment checkout logo by the current currency
      * @return string
+     * @throws Exception
      */
     protected function getPaymentCheckoutLogo()
     {
-        $logo = '';
         $currencyCode = $this->context->currency->iso_code;
         switch ($currencyCode) {
             case 'AUD':
-                $logo = 'latitudepay_checkout.svg';
+                $logo = 'latitudepay.svg';
                 break;
             case 'NZD':
-                $logo = 'genoapay_checkout.svg';
+                $logo = 'genoapay.svg';
                 break;
             default:
                 throw new Exception('Unsupported currency code. Please change your currency code to AUD or NZD.');
@@ -131,11 +130,15 @@ class latitude_officialpaymentModuleFrontController extends ModuleFrontControlle
             BinaryPay::log($e->getMessage(), true, 'prestashop-latitude-finance.log');
             PrestaShopLogger::addLog($e->getMessage(), 1, null, 'PaymentModule', (int)$cart->id, true);
             $this->errors[] = $e->getMessage();
+            Tools::redirect('index.php?controller=order');
+            return;
         } catch (Exception $e) {
             $message = $e->getMessage() ?: 'Something massively went wrong. Please try again. If the problem still exists, please contact us';
             PrestaShopLogger::addLog($message, 1, null, 'PaymentModule', (int)$cart->id, true);
             BinaryPay::log($message, true, 'latitudepay-finance-' . date('Y-m-d') . '.log');
             $this->errors[] = $message;
+            Tools::redirect('index.php?controller=order');
+            return;
         }
         return $purchaseUrl;
     }

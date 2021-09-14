@@ -30,255 +30,255 @@ final class BinaryPay_Variable
     /**
      *  API All Response Status
      */
-    const STATUS_DECLINED   = 'DECLINED';
-    const STATUS_BLOCKED    = 'BLOCKED';
-    const STATUS_FAILED     = 'FAILED';
-    const STATUS_INPROGRESS = 'INPROGRESS';
-    const STATUS_SUCCESSFUL = 'SUCCESSFUL';
-    const STATUS_AUTHORISED = 'AUTHORISED';
-    const STATUS_SUBMITTED  = 'SUBMITTED';
-    const STATUS_REFUNDED   = 'REFUNDED';
-    const STATUS_NEW        = 'NEW';
-    const STATUS_EXPIRED    = 'EXPIRED';
-    const STATUS_UNKNOWN    = 'UNKNOWN';
-    const STATUS_APPROVED   = 'APPROVED';
-    const STATUS_ERROR      = 'ERROR';
-    const STATUS_PROCESSING = 'IN_PROGRESS';
-    const STATUS_COMPLETED  = 'COMPLETED';
+    public const STATUS_DECLINED   = 'DECLINED';
+    public const STATUS_BLOCKED    = 'BLOCKED';
+    public const STATUS_FAILED     = 'FAILED';
+    public const STATUS_INPROGRESS = 'INPROGRESS';
+    public const STATUS_SUCCESSFUL = 'SUCCESSFUL';
+    public const STATUS_AUTHORISED = 'AUTHORISED';
+    public const STATUS_SUBMITTED  = 'SUBMITTED';
+    public const STATUS_REFUNDED   = 'REFUNDED';
+    public const STATUS_NEW        = 'NEW';
+    public const STATUS_EXPIRED    = 'EXPIRED';
+    public const STATUS_UNKNOWN    = 'UNKNOWN';
+    public const STATUS_APPROVED   = 'APPROVED';
+    public const STATUS_ERROR      = 'ERROR';
+    public const STATUS_PROCESSING = 'IN_PROGRESS';
+    public const STATUS_COMPLETED  = 'COMPLETED';
 
     /**
      *  Account Infomation
      */
-    const ACCOUNTID         = 'accountId';
-    const USERNAME          = 'username';
-    const PASSWORD          = 'password';
-    const ENVIRONMENT       = 'environment';
+    public const ACCOUNTID         = 'accountId';
+    public const USERNAME          = 'username';
+    public const PASSWORD          = 'password';
+    public const ENVIRONMENT       = 'environment';
 
 
-    const GATEWAY_PATH      = 'Gateways';
+    public const GATEWAY_PATH      = 'Gateways';
 
-    const ERROR_SIGNAL      = 'BinaryPay Notice';
+    public const ERROR_SIGNAL      = 'BinaryPay Notice';
 
     /**
      * API key for binarypay
      */
-    const API_KEY           = 'apiKey';
+    public const API_KEY           = 'apiKey';
 
     /**
      *  Purchase or Refund Amount
      */
-    const AMOUNT            = 'amount';
+    public const AMOUNT            = 'amount';
 
     /**
      * Currency Type
      */
-    const CURRENCY          = 'currency';
+    public const CURRENCY          = 'currency';
 
     /**
      * User Agent - user's browser
      */
-    const USER_AGENT        = 'userAgent';
+    public const USER_AGENT        = 'userAgent';
 
     /**
      * Transaction - an array contains transaction details
      */
-    const TRANSACTION       = 'transaction';
+    public const TRANSACTION       = 'transaction';
 
     /**
      * Product Code - for qcard long term finance
      */
-    const PRODUCT_CODE      = 'productCode';
+    public const PRODUCT_CODE      = 'productCode';
 
     /**
      * Direct to return URL after purchase
      */
-    const REDIRECT          = 'redirecToUrlResponse';
+    public const REDIRECT          = 'redirecToUrlResponse';
 
     /**
      * Process number returned by Qcard API
      */
-    const PROCESS_NO        = "processNo";
+    public const PROCESS_NO        = "processNo";
 
     /**
      * Quantity of line items - qcard
      */
-    const QUANTITY          = 'quantity';
+    public const QUANTITY          = 'quantity';
     /**
      * ID
      */
-    const IP                = 'ip';
+    public const IP                = 'ip';
 
     /**
      *  For all Callback Url
      */
-    const RETURN_URL        = 'returnUrl';
+    public const RETURN_URL        = 'returnUrl';
 
     /**
      *  Purchase or Refund Reference
      */
-    const REFERENCE         = 'reference';
+    public const REFERENCE         = 'reference';
 
     /**
      *  Purchase or Refund particular
      */
-    const PARTICULAR        = 'particular';
+    public const PARTICULAR        = 'particular';
 
     /**
      *  Card Number
      */
-    const CARD_NUMBER       = 'cardNumber';
+    public const CARD_NUMBER       = 'cardNumber';
 
     /**
      *  Card Type
      */
-    const CARD_TYPE         = 'cardType';
+    public const CARD_TYPE         = 'cardType';
 
     /**
      *  Card Expiry
      */
-    const CARD_EXPIRY       = 'cardExpiry';
+    public const CARD_EXPIRY       = 'cardExpiry';
 
     /**
      *  Card Holder
      */
-    const CARD_HOLDER       = 'cardHolder';
+    public const CARD_HOLDER       = 'cardHolder';
 
     /**
      *  Card CSC
      */
-    const CARD_CSC          = 'cardCSC';
+    public const CARD_CSC          = 'cardCSC';
 
     /**
      *  Card Token
      */
-    const CARD_TOKEN        = 'cardToken';
+    public const CARD_TOKEN        = 'cardToken';
 
     /**
      *  Token Reference
      */
-    const CARD_TOKEN_REF    = 'tokenReference';
+    public const CARD_TOKEN_REF    = 'tokenReference';
 
     /**
      *  Origin Transaction Id
      */
-    const ORIGIN_TRANSACTION_ID    = 'originalTransactionId';
+    public const ORIGIN_TRANSACTION_ID    = 'originalTransactionId';
 
     /**
      * Transaction Id
      */
-    const TRANSACTION_ID    = 'transactionId';
+    public const TRANSACTION_ID    = 'transactionId';
 
     /**
      *  Email
      */
-    const EMAIL             = 'email';
+    public const EMAIL             = 'email';
 
     /**
      * Merchat
      */
-    const MERCHANT          = 'merchant';
+    public const MERCHANT          = 'merchant';
 
     /**
      * Merchant Code
      */
-    const MERCHANT_CODE     = 'merchantCode';
+    public const MERCHANT_CODE     = 'merchantCode';
 
     /**
      * Merchant Url
      */
-    const MERCHANT_URL      = 'merchantUrl';
+    public const MERCHANT_URL      = 'merchantUrl';
 
     /**
      *  Webpayment Merchant Token
      */
-    const MERCHANT_TOKEN    = 'merchantToken';
+    public const MERCHANT_TOKEN    = 'merchantToken';
 
     /**
      *  Webpayment Store Card
      */
-    const STORE_CARD        = 'storeCard';
+    public const STORE_CARD        = 'storeCard';
 
     /**
      *  Webpayment Force Store Card
      */
-    const FORCE_STORE_CARD  = 'forceStoreCard';
+    public const FORCE_STORE_CARD  = 'forceStoreCard';
 
     /**
      *  Webpayment Display Email
      */
-    const DISPLAY_EMAIL     = 'displayCustomerEmail';
+    public const DISPLAY_EMAIL     = 'displayCustomerEmail';
 
     /**
      *  WebPayment CMD Code
      */
-    const CMD    = 'cmd';
+    public const CMD    = 'cmd';
 
     /**
      * Bank Info
      */
-    const BANK = 'bank';
+    public const BANK = 'bank';
 
-    const SKU  = 'sku';
+    public const SKU  = 'sku';
 
     /**
      * OnlineEFTPOS PayerId
      */
-    const MOBILENUMBER      = 'mobileNumber';
+    public const MOBILENUMBER      = 'mobileNumber';
 
     /**
      * OnlineEFTPOS Description
      */
-    const DESCRIPTION       = 'description';
+    public const DESCRIPTION       = 'description';
 
     /**
      * PayerId Type
      */
-    const PAYMENT_TYPE       = 'paymentType';
+    public const PAYMENT_TYPE       = 'paymentType';
 
     /**
      * Refund Id
      */
-    const REFUND_ID          = 'refundId';
+    public const REFUND_ID          = 'refundId';
 
     /**
      * Payment Id
      */
-    const ORDER_ID           = 'orderId';
+    public const ORDER_ID           = 'orderId';
 
     /**
      * Bank Id
      */
-    const BANK_ID            = 'bankId';
+    public const BANK_ID            = 'bankId';
 
     /**
      * Term - financenow
      */
-    const TERM               = 'term';
+    public const TERM               = 'term';
 
     /**
      * Defterm - financenow
      */
-    const DEFTERM            = 'defterm';
+    public const DEFTERM            = 'defterm';
 
     /**
      * Deposit - financenow
      */
-    const DEPOSIT            = 'deposit';
+    public const DEPOSIT            = 'deposit';
 
     /**
      * Rate - financenow
      */
-    const RATE               = 'rate';
+    public const RATE               = 'rate';
 
     /**
      * Customer name - financenow
      */
-    const CUSTOMER_NAME      = 'customerName';
+    public const CUSTOMER_NAME      = 'customerName';
 
     /**
      *Customer email - financenow
      */
-    const CUSTOMER_EMAIL     = 'customerEmail';
+    public const CUSTOMER_EMAIL     = 'customerEmail';
 
     /**
      * GENOAPAY
@@ -286,105 +286,105 @@ final class BinaryPay_Variable
     /**
      * Firstname
      */
-    const FIRSTNAME          = 'firstname';
+    public const FIRSTNAME          = 'firstname';
 
     /**
      * Surname
      */
-    const SURNAME            = 'surname';
+    public const SURNAME            = 'surname';
 
     /**
      * Shipping Address
      */
-    const SHIPPING_ADDRESS   = 'shippingAddress';
+    public const SHIPPING_ADDRESS   = 'shippingAddress';
 
     /**
      * Billing Address
      */
-    const BILLING_ADDRESS    = 'billingAddress';
+    public const BILLING_ADDRESS    = 'billingAddress';
 
     /**
      * Suburb
      */
-    const SHIPPING_SUBURB             = 'shippingSuburb';
+    public const SHIPPING_SUBURB             = 'shippingSuburb';
 
     /**
      * City
      */
-    const SHIPPING_CITY               = 'shippingCity';
+    public const SHIPPING_CITY               = 'shippingCity';
 
     /**
      * Postcode
      */
-    const SHIPPING_POSTCODE           = 'shippingPostcode';
+    public const SHIPPING_POSTCODE           = 'shippingPostcode';
 
     /**
      * Country Code
      */
-    const SHIPPING_COUNTRY_CODE       = 'shippingCountryCode';
+    public const SHIPPING_COUNTRY_CODE       = 'shippingCountryCode';
 
     /**
      * Suburb
      */
-    const BILLING_SUBURB             = 'billingSuburb';
+    public const BILLING_SUBURB             = 'billingSuburb';
 
     /**
      * City
      */
-    const BILLING_CITY               = 'billingCity';
+    public const BILLING_CITY               = 'billingCity';
 
     /**
      * Postcode
      */
-    const BILLING_POSTCODE           = 'billingPostcode';
+    public const BILLING_POSTCODE           = 'billingPostcode';
 
     /**
      * Country Code
      */
-    const BILLING_COUNTRY_CODE       = 'billingCountryCode';
+    public const BILLING_COUNTRY_CODE       = 'billingCountryCode';
 
     /**
      * Purchase Token
      */
-    const PURCHASE_TOKEN             = 'purchaseToken';
+    public const PURCHASE_TOKEN             = 'purchaseToken';
 
     /**
      * Tax amount
      */
-    const TAX_AMOUNT                 = 'taxAmount';
+    public const TAX_AMOUNT                 = 'taxAmount';
 
     /**
      * Shipping Lines
      */
-    const SHIPPING_LINES             = 'shippingLines';
+    public const SHIPPING_LINES             = 'shippingLines';
 
     /**
      * Product
      */
-    const PRODUCTS                   = 'products';
+    public const PRODUCTS                   = 'products';
 
     /**
      * Refund Reason
      */
-    const REASON                     = 'reason';
+    public const REASON                     = 'reason';
 
     /**
      * FailureURL POLIPAY
      */
-    const FAILURE_URL                = 'FailureURL';
+    public const FAILURE_URL                = 'FailureURL';
 
     /**
      * NotificationURL POLIPAY
      */
-    const NOTIFICATION_URL           = 'NotificationURL';
+    public const NOTIFICATION_URL           = 'NotificationURL';
 
     /**
      * CancellationURL POLIPAY
      */
-    const CANCELLATION_URL           = 'CancellationURL';
+    public const CANCELLATION_URL           = 'CancellationURL';
 
     /**
      * MerchantReferenceFormat POLIPAY
      */
-    const REFERENCEFORMAT            = 'ReferenceFormat';
+    public const REFERENCEFORMAT            = 'ReferenceFormat';
 }

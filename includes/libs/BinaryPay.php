@@ -64,7 +64,7 @@ abstract class BinaryPay extends Base implements GatewayInterface
                 ),
             );
 
-    const GATEWAY_PATH = 'Gateways';
+    public const GATEWAY_PATH = 'Gateways';
 
     public function __construct($credential = array())
     {
@@ -271,7 +271,8 @@ abstract class BinaryPay extends Base implements GatewayInterface
         $errorCode      = $this->find('api-error-code-field', $response);
 
         throw new BinaryPay_Exception(
-            sprintf("Message: %s", $errorMessage), $errorCode
+            sprintf("Message: %s", $errorMessage),
+            $errorCode
         );
     }
 
@@ -350,7 +351,7 @@ abstract class BinaryPay extends Base implements GatewayInterface
             // multiple gateway testing
             array_shift($gatewayName);
         }
-            // Single gateway testing
+        // Single gateway testing
         self::_runGatewayTest($gatewayName, $credential);
     }
 
@@ -380,7 +381,7 @@ abstract class BinaryPay extends Base implements GatewayInterface
             $result    = $timestamp . $message;
 
             // Add new line before dump data
-            $contents = (strlen($contents) > 1) ?  "\n" . $result : $result;
+            $contents = (strlen($contents) > 1) ? "\n" . $result : $result;
             fwrite($file, $contents);
             // Close the file handle to save memory
             fclose($file);
@@ -389,25 +390,30 @@ abstract class BinaryPay extends Base implements GatewayInterface
         }
     }
 
-    public function purchase(array $args) {}
+    public function purchase(array $args)
+    {
+    }
 
     /**
      *
      */
-    public function refund($args) {
+    public function refund($args)
+    {
         throw new BinaryPay_Exception('The "Refund" endpoint does not exist.');
     }
 
-    public function authrise($args) {
-         throw new BinaryPay_Exception('The "Authrise" endpoint does not exist.');
+    public function authrise($args)
+    {
+        throw new BinaryPay_Exception('The "Authrise" endpoint does not exist.');
     }
 
-    public function add($args) {
+    public function add($args)
+    {
         throw new BinaryPay_Exception('The "Add" endpoint does not exist.');
     }
 
-    public function retrieve(array $args) {
+    public function retrieve(array $args)
+    {
         throw new BinaryPay_Exception('The "Retrieve" endpoint does not exist.');
     }
-
 }

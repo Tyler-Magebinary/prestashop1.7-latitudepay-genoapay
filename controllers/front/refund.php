@@ -1,6 +1,12 @@
 <?php
+/**
+ * Class latitude_officialrefundModuleFrontController
+ *  @author    Latitude Finance
+ *  @copyright Latitude Finance
+ *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+ **/
 
-class latitude_officialrefundModuleFrontController extends ModuleFrontController
+class latitude_OfficialRefundModuleFrontController extends ModuleFrontController
 {
     /**
      * @var integer
@@ -24,9 +30,10 @@ class latitude_officialrefundModuleFrontController extends ModuleFrontController
 
     /**
      * The ajax controller for clicking the frontend GenoaPay refund or LatitudePay refund button
-     * @return json
+     * @return void
      */
-    public function initContent() {
+    public function initContent()
+    {
         $json = '';
         parent::initContent();
 
@@ -56,6 +63,11 @@ class latitude_officialrefundModuleFrontController extends ModuleFrontController
         echo Tools::jsonEncode($json);
     }
 
+    /**
+     * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
     protected function refund()
     {
         $order = new Order($this->orderId);
@@ -96,6 +108,9 @@ class latitude_officialrefundModuleFrontController extends ModuleFrontController
         }
     }
 
+    /**
+     * @param $order
+     */
     public function createNewOrderHistory($order)
     {
         // Create new OrderHistory
@@ -128,12 +143,20 @@ class latitude_officialrefundModuleFrontController extends ModuleFrontController
         }
     }
 
+    /**
+     * @param $reference
+     * @return $this
+     */
     public function setReference($reference)
     {
         $this->reference = $reference;
         return $this;
     }
 
+    /**
+     * @param $transactionId
+     * @return $this
+     */
     public function setTransactionId($transactionId)
     {
         $this->transactionId = $transactionId;

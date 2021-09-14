@@ -1,43 +1,24 @@
 <?php
 /**
-* Woocommerce LatitudeFinance Payment Extension
-*
-* NOTICE OF LICENSE
-*
-* Copyright 2020 LatitudeFinance
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*   http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-* @category    LatitudeFinance
-* @package     Latitude_Finance
-* @author      MageBinary Team
-* @copyright   Copyright (c) 2020 LatitudeFinance (https://www.latitudefinancial.com.au/)
-* @license     http://www.apache.org/licenses/LICENSE-2.0
-*/
+ * Class Genoapay
+ *  @author    Latitude Finance
+ *  @copyright Latitude Finance
+ *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+ */
 
 class Genoapay extends BinaryPay
 {
-    const API_VERSION = 'v3';
+    public const API_VERSION = 'v3';
 
-    const TOKEN_ENDPOINT = 'token';
-    const PURCHASE_ENDPOINT = 'sale/online';
-    const PURCHASE_STATUS_ENDPOINT = 'sale/pos';
-    const CONFIGURATON_ENDPOINT= 'configuration';
+    public const TOKEN_ENDPOINT = 'token';
+    public const PURCHASE_ENDPOINT = 'sale/online';
+    public const PURCHASE_STATUS_ENDPOINT = 'sale/pos';
+    public const CONFIGURATON_ENDPOINT= 'configuration';
 
-    const STATUS_SUCCESSFUL = 200;
-    const STATUS_INVALID = 400;
-    const STATUS_ACCESS_DENIED = 403;
-    const STATUS_INTERNAL_SERVER_ERROR = 500;
+    public const STATUS_SUCCESSFUL = 200;
+    public const STATUS_INVALID = 400;
+    public const STATUS_ACCESS_DENIED = 403;
+    public const STATUS_INTERNAL_SERVER_ERROR = 500;
 
     /**
      * @var boolean
@@ -68,6 +49,7 @@ class Genoapay extends BinaryPay
 
     public function getHeader()
     {
+        $headers = [];
         $headers[] = "api-version: " . self::API_VERSION;
 
         if ($this->getConfig('request-content-type') == 'json') {
@@ -117,11 +99,11 @@ class Genoapay extends BinaryPay
         }
     }
 
-  /**
-     * @description main function to query API.
-     * @param  array  request body
-     * @return array  returns API response
-     */
+    /**
+       * @description main function to query API.
+       * @param  array  request body
+       * @return array  returns API response
+       */
 
     public function getApiUrl()
     {
@@ -229,7 +211,7 @@ class Genoapay extends BinaryPay
      * Pass in purchase payment info as below:
      * TODO: Cannot support address in customer for now, since the array structure
      * @param  array
-     * @return response
+     * @return array
      */
     public function purchase(array $args = array())
     {
@@ -273,7 +255,11 @@ class Genoapay extends BinaryPay
         );
 
         // signature
-        $signature = hash_hmac('sha256', base64_encode($this->recursiveImplode($request, '', true)), $this->getConfig('password'));
+        $signature = hash_hmac(
+            'sha256',
+            base64_encode($this->recursiveImplode($request, '', true)),
+            $this->getConfig('password')
+        );
 
         // Clean implode buffer
         $this->gluedString = '';
@@ -295,7 +281,7 @@ class Genoapay extends BinaryPay
     /**
      * refund request
      * @param  array $args
-     * @return response
+     * @return array
      */
     public function refund($args)
     {
@@ -318,7 +304,12 @@ class Genoapay extends BinaryPay
             'request-content-type'  => 'json',
             'response-content-type' => 'json',
             'api-success-status'    => 'refundId',
-            'url'                   => $this->getRefundUrl($token) . '?signature=' . hash_hmac('sha256', base64_encode($this->recursiveImplode($request, '', true)), $args[BinaryPay_Variable::PASSWORD]),
+            'url'                   => $this->getRefundUrl($token) . '?signature=' .
+                hash_hmac(
+                    'sha256',
+                    base64_encode($this->recursiveImplode($request, '', true)),
+                    $args[BinaryPay_Variable::PASSWORD]
+                ),
             'request'               => $request
         ));
         return $this->query();
@@ -327,7 +318,7 @@ class Genoapay extends BinaryPay
     /**
      * retrieve
      * @param  array  $args
-     * @return response
+     * @return array
      */
     public function retrieve(array $args)
     {

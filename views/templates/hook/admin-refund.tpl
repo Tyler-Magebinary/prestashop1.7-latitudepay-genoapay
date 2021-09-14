@@ -1,20 +1,25 @@
+{*
+*  @author    Latitude Finance
+*  @copyright Latitude Finance
+*  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+*}
 {if $custom_refund && $available_amount}
     <div class="btn latitudeRefund" id="refundAction"
          style="display: none; border: 1px #ccc solid; cursor: pointer; margin-left: 5px;">
         <span class="refundBoxLabel">
             <i class="icon-exchange"></i>
-            {l s=$payment_gateway_name} Full Refund
+            {l s="%payment_gateway_name% Full Refund" sprintf=['%payment_gateway_name%' => $payment_gateway_name] d="Modules.Latitude_Official.Admin"}
             {if $total_paid > $available_amount}
-                (Gateway refund only)
+                {l s="(Gateway refund only)" d="Modules.Latitude_Official.Admin"}
             {/if}
         </span>
         <div id="latitudeRefundBox" style="display: none;">
-            <input name="refund_amount" type="text" placeholder="Refund amount" value="{l s=$available_amount }"
-                   data-maximum="{l s=$available_amount }" readonly>
+            <input name="refund_amount" type="text" placeholder="Refund amount" value="{l s=$available_amount d="Modules.Latitude_Official.Admin"}"
+                   data-maximum="{l s=$available_amount d="Modules.Latitude_Official.Admin"}" readonly>
             <button class="btn  btn-refund" style="margin: 0 2px; border: 1px #ccc solid"
-                    data-return_url="{$refund_url}" data-query="{$query_data}">Refund
+                    data-return_url="{$refund_url}" data-query="{$query_data}">{l s="Refund" d="Modules.Latitude_Official.Admin"}
             </button>
-            <button class="btn btn-cancel" style="border: 1px #ccc solid">Cancel</button>
+            <button class="btn btn-cancel" style="border: 1px #ccc solid">{l s="Cancel" d="Modules.Latitude_Official.Admin"}</button>
         </div>
     </div>
     <script type="text/html" id="LatitudePayParitalRefundTemplate">
@@ -23,7 +28,7 @@
                 <div class="md-checkbox md-checkbox-inline">
                     <label><input type="checkbox" id="doPartialRefundLatitude" name="doPartialRefundLatitude"
                                   material_design="material_design" value="1">
-                        <i class="md-checkbox-control"></i>Refund {l s=$payment_gateway_name}</label>
+                        <i class="md-checkbox-control"></i>{l s="Refund %payment_gateway_name%" sprintf=["%payment_gateway_name%" => $payment_gateway_name] d="Modules.Latitude_Official.Admin"}</label>
                 </div>
             </div>
         </div>

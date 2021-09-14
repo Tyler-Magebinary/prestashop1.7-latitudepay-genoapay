@@ -38,5 +38,4 @@ class BinaryPay_Exception extends Exception
             $this->code = $code;
         }
     }
-
 }

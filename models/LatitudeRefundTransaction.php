@@ -1,8 +1,14 @@
 <?php
+/**
+ * Class LatitudeRefundTransaction
+ *  @author    Latitude Finance
+ *  @copyright Latitude Finance
+ *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+ */
 
 class LatitudeRefundTransaction
 {
-    const TABLE_NAME = _DB_PREFIX_ . 'latitude_refund_transactions';
+    public const TABLE_NAME = _DB_PREFIX_ . 'latitude_refund_transactions';
     public $id_refund;
     public $id_order;
     public $order;
@@ -23,8 +29,8 @@ class LatitudeRefundTransaction
     public static function fromRefundId($refundId)
     {
         return Db::getInstance()->getRow(
-            "SELECT * FROM `" . self::TABLE_NAME . "`
-			WHERE `id_refund` = '".$refundId."'", false
+            "SELECT * FROM `" . self::TABLE_NAME . "`WHERE `id_refund` = '".$refundId."'",
+            false
         );
     }
 
@@ -41,7 +47,8 @@ class LatitudeRefundTransaction
         );
     }
 
-    public function set($field, $value) {
+    public function set($field, $value)
+    {
         $this->{$field} = $value;
         return $this;
     }
@@ -51,12 +58,31 @@ class LatitudeRefundTransaction
         if (self::fromRefundId($this->id_refund)) {
             // Update
             $sql = "UPDATE `" . self::TABLE_NAME . "` SET " .
-                sprintf("`id_order` = %s, `refund_date` = '%s', `refund_amount` = %s, `reference` = '%s', `commission_amount` = %s, `payment_gateway` = '%s'", $this->id_order, $this->refund_date, $this->refund_amount, $this->reference, $this->commission_amount, $this->payment_gateway);
-
+                sprintf(
+                    "`id_order` = %s, `refund_date` = '%s', `refund_amount` = %s, `reference` = '%s',
+                 `commission_amount` = %s, `payment_gateway` = '%s'",
+                    $this->id_order,
+                    $this->refund_date,
+                    $this->refund_amount,
+                    $this->reference,
+                    $this->commission_amount,
+                    $this->payment_gateway
+                );
         } else {
             // Create
-            $sql = "INSERT INTO `" . self::TABLE_NAME . "`(`id_refund`, `id_order`, `refund_date`, `refund_amount`, `reference`, `commission_amount`, `payment_gateway`) " .
-                sprintf("VALUES ('%s', %s, '%s', %s, '%s', %s, '%s')", $this->id_refund, $this->id_order, $this->refund_date, $this->refund_amount, $this->reference, $this->commission_amount, $this->payment_gateway);
+            $sql = "INSERT INTO `" . self::TABLE_NAME .
+                "`(`id_refund`, `id_order`, `refund_date`, `refund_amount`, `reference`, `commission_amount`,
+                 `payment_gateway`) " .
+                sprintf(
+                    "VALUES ('%s', %s, '%s', %s, '%s', %s, '%s')",
+                    $this->id_refund,
+                    $this->id_order,
+                    $this->refund_date,
+                    $this->refund_amount,
+                    $this->reference,
+                    $this->commission_amount,
+                    $this->payment_gateway
+                );
         }
         return Db::getInstance()->Execute($sql);
     }

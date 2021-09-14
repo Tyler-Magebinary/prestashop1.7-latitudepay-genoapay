@@ -27,10 +27,10 @@
 
 class WC_LatitudeFinance_Http
 {
-    const HTTP_REQUEST_GET      = 'GET';
-    const HTTP_REQUEST_POST     = 'POST';
-    const HTTP_REQUEST_PUT      = 'PUT';
-    const HTTP_REQUEST_DELETE   = 'DELETE';
+    public const HTTP_REQUEST_GET      = 'GET';
+    public const HTTP_REQUEST_POST     = 'POST';
+    public const HTTP_REQUEST_PUT      = 'PUT';
+    public const HTTP_REQUEST_DELETE   = 'DELETE';
 
     protected $_config;
 
@@ -95,7 +95,7 @@ class WC_LatitudeFinance_Http
             CURLINFO_HEADER_OUT => true
         ));
 
-        if(!empty($requestBody) && $httpVerb != self::HTTP_REQUEST_GET) {
+        if (!empty($requestBody) && $httpVerb != self::HTTP_REQUEST_GET) {
             curl_setopt($curl, CURLOPT_POSTFIELDS, $requestBody);
         }
 
@@ -112,7 +112,7 @@ class WC_LatitudeFinance_Http
         /*TODO: TIDY*/
 
         $debug = false;
-        if(isset($this->_config['debug'])) {
+        if (isset($this->_config['debug'])) {
             $debug = $this->_config['debug'];
         }
 
@@ -128,7 +128,6 @@ class WC_LatitudeFinance_Http
         }
         curl_close($curl);
         return $response;
-
     }
 
     protected function _getHeader()

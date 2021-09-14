@@ -1,6 +1,12 @@
 <?php
+/**
+ *  Class latitude_officialpaymentModuleFrontController
+ *  @author    Latitude Finance
+ *  @copyright Latitude Finance
+ *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+ */
 
-class latitude_officialpaymentModuleFrontController extends ModuleFrontController
+class latitude_OfficialPaymentModuleFrontController extends ModuleFrontController
 {
     public $ssl = false;
     public $display_column_left = false;
@@ -18,7 +24,7 @@ class latitude_officialpaymentModuleFrontController extends ModuleFrontControlle
     /**
      * @var string
      */
-    const DEFAULT_VALUE = 'NO_VALUE';
+    public const DEFAULT_VALUE = 'NO_VALUE';
 
     /**
      * @see FrontController::initContent()
@@ -35,30 +41,29 @@ class latitude_officialpaymentModuleFrontController extends ModuleFrontControlle
         } catch (Exception $e) {
             $errors[] = Tools::displayError($e->getMessage());
             Tools::redirect('index.php?controller=order');
-
             return;
         }
     }
 
     /**
-     * get the payment checkout logo by the current currency
+     * Get the payment checkout logo by the current currency
      * @return string
+     * @throws Exception
      */
     protected function getPaymentCheckoutLogo()
     {
-        $logo = '';
         $currencyCode = $this->context->currency->iso_code;
         switch ($currencyCode) {
             case 'AUD':
-                $logo = 'latitudepay_checkout.svg';
+                $logo = 'latitudepay.svg';
                 break;
             case 'NZD':
-                $logo = 'genoapay_checkout.svg';
+                $logo = 'genoapay.svg';
                 break;
             default:
                 throw new Exception('Unsupported currency code. Please change your currency code to AUD or NZD.');
         }
-        return (Configuration::get('PS_SSL_ENABLED') ? _PS_BASE_URL_SSL_ : _PS_BASE_URL_) . $this->module->getPathUri() . 'logos' . DIRECTORY_SEPARATOR . $logo;
+        return (Configuration::get('PS_SSL_ENABLED') ? _PS_BASE_URL_SSL_ : _PS_BASE_URL_) . $this->module->getPathUri() . 'views/img/logos' . DIRECTORY_SEPARATOR . $logo;
     }
 
     /**
@@ -68,14 +73,6 @@ class latitude_officialpaymentModuleFrontController extends ModuleFrontControlle
      */
     public function getPurchaseUrl()
     {
-        /**
-         * Give a default value of the purchase URL
-         * @fix Notice: Undefined variable: purchaseUrl in /var/www/html/modules/latitude_official/controllers/front/payment.php on line 163 when an exception throws
-         * @var string
-         */
-        $purchaseUrl = '';
-        $serializeCartObject = serialize($this->context->cart);
-
         try {
             $cookie = $this->getCookie();
             $currency   = $this->context->currency;
@@ -131,11 +128,15 @@ class latitude_officialpaymentModuleFrontController extends ModuleFrontControlle
             BinaryPay::log($e->getMessage(), true, 'prestashop-latitude-finance.log');
             PrestaShopLogger::addLog($e->getMessage(), 1, null, 'PaymentModule', (int)$cart->id, true);
             $this->errors[] = $e->getMessage();
+            Tools::redirect('index.php?controller=order');
+            return;
         } catch (Exception $e) {
             $message = $e->getMessage() ?: 'Something massively went wrong. Please try again. If the problem still exists, please contact us';
             PrestaShopLogger::addLog($message, 1, null, 'PaymentModule', (int)$cart->id, true);
             BinaryPay::log($message, true, 'latitudepay-finance-' . date('Y-m-d') . '.log');
             $this->errors[] = $message;
+            Tools::redirect('index.php?controller=order');
+            return;
         }
         return $purchaseUrl;
     }

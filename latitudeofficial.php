@@ -18,7 +18,7 @@ require_once(dirname(__FILE__) . '/includes/autoload.php');
 require_once(dirname(__FILE__).'/helpers/OrderHelper.php');
 require_once(dirname(__FILE__).'/models/LatitudeRefundTransaction.php');
 
-class Latitude_Official extends PaymentModule
+class latitudeofficial extends PaymentModule
 {
     /**
      * @var string
@@ -196,7 +196,7 @@ class Latitude_Official extends PaymentModule
     );
 
     /**
-     * Latitude_Official constructor.
+     * latitudeofficial constructor.
      */
     public function __construct()
     {
@@ -204,7 +204,7 @@ class Latitude_Official extends PaymentModule
          * The value MUST be the name of the module's folder.
          * @var string
          */
-        $this->name = 'latitude_official';
+        $this->name = 'latitudeofficial';
 
         /**
          * The title for the section that shall contain this module in PrestaShop's back office modules list.
@@ -213,7 +213,7 @@ class Latitude_Official extends PaymentModule
          */
         $this->tab = 'payments_gateways';
 
-        $this->version = '1.2.0';
+        $this->version = '1.2.1';
         $this->author = 'Latitude Financial Services';
 
         /**
@@ -242,7 +242,7 @@ class Latitude_Official extends PaymentModule
         // Calling the parent constuctor method must be done after the creation of the $this->name variable and before any use of the $this->l() translation method.
         parent::__construct();
         // If the module is not enabled or installed then do not initialize
-        if (!Module::isInstalled('latitude_official') || !Module::isEnabled('latitude_official')) {
+        if (!Module::isInstalled('latitudeofficial') || !Module::isEnabled('latitudeofficial')) {
             return;
         }
 
@@ -704,7 +704,7 @@ class Latitude_Official extends PaymentModule
             ->setAction($this->context->link->getModuleLink($this->name, 'payment', [], true))
             ->setLogo($this->getPaymentLogo())
             ->setAdditionalInformation(
-                $this->fetch('module:latitude_official/views/templates/hook/payment_snippet.tpl')
+                $this->fetch('module:latitudeofficial/views/templates/hook/payment_snippet.tpl')
             );
         return [$newOption];
     }
@@ -738,8 +738,7 @@ class Latitude_Official extends PaymentModule
      */
     public function hookDisplayProductPriceBlock($params)
     {
-        if(
-            !isset($params['type']) ||
+        if (!isset($params['type']) ||
             $params['type'] !== "weight" ||
             !$this->context->controller instanceof ProductController ||
             !isset($params['hook_origin'])

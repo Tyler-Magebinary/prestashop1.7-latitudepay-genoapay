@@ -1,12 +1,12 @@
 <?php
 /**
- * Class latitude_officialrefundModuleFrontController
+ * Class latitudeofficialrefundModuleFrontController
  *  @author    Latitude Finance
  *  @copyright Latitude Finance
  *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  **/
 
-class latitude_OfficialRefundModuleFrontController extends ModuleFrontController
+class latitudeofficialRefundModuleFrontController extends ModuleFrontController
 {
     /**
      * @var integer

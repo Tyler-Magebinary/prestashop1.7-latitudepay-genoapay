@@ -6,6 +6,9 @@
  *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  */
 
+use phpseclib\Crypt\Hash;
+use Raven_Compat;
+
 class Genoapay extends BinaryPay
 {
     public const API_VERSION = 'v3';
@@ -71,7 +74,7 @@ class Genoapay extends BinaryPay
             $encodedAuth = 'Bearer ' . $this->getConfig('authToken');
         } else {
             $authString = $this->getConfig(BinaryPay_Variable::USERNAME) . ':' . $this->getConfig(BinaryPay_Variable::PASSWORD);
-            $encodedAuth = 'Basic ' . base64_encode($authString);
+            $encodedAuth = 'Basic ' . mb_convert_encoding($authString, 'utf8');
         }
         return $encodedAuth;
     }
@@ -255,10 +258,10 @@ class Genoapay extends BinaryPay
         );
 
         // signature
-        $signature = hash_hmac(
-            'sha256',
-            base64_encode($this->recursiveImplode($request, '', true)),
-            $this->getConfig('password')
+        $signature = $this->hash(
+            $this->base64Encode($this->recursiveImplode($request, '', true)),
+            $this->getConfig('password'),
+            'sha256'
         );
 
         // Clean implode buffer
@@ -305,10 +308,10 @@ class Genoapay extends BinaryPay
             'response-content-type' => 'json',
             'api-success-status'    => 'refundId',
             'url'                   => $this->getRefundUrl($token) . '?signature=' .
-                hash_hmac(
-                    'sha256',
-                    base64_encode($this->recursiveImplode($request, '', true)),
-                    $args[BinaryPay_Variable::PASSWORD]
+                $this->hash(
+                    $this->base64Encode($this->recursiveImplode($request, '', true)),
+                    $args[BinaryPay_Variable::PASSWORD],
+                    'sha256'
                 ),
             'request'               => $request
         ));
@@ -332,5 +335,28 @@ class Genoapay extends BinaryPay
         ));
 
         return $this->query();
+    }
+
+    /**
+     * Convert string to base64 code
+     * @param $string
+     * @return array|false|string|string[]|null
+     */
+    private function base64Encode($string)
+    {
+        $base64 = mb_convert_encoding($string, 'base64');
+        return str_replace("\r\n", "", $base64);
+    }
+
+    /**
+     * Encrypt string using SHA256 algo
+     * @param $data
+     * @param $key
+     * @param string $algo
+     * @return false|string
+     */
+    private function hash($data, $key, $algo = MHASH_SHA256)
+    {
+        return mhash($algo, $data, $key);
     }
 }

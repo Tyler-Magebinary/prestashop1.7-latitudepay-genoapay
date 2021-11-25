@@ -8,18 +8,18 @@
          style="display: none; border: 1px #ccc solid; cursor: pointer; margin-left: 5px;">
         <span class="refundBoxLabel">
             <i class="icon-exchange"></i>
-            {l s="%payment_gateway_name% Full Refund" sprintf=['%payment_gateway_name%' => $payment_gateway_name] d="Modules.Latitude_Official.Admin"}
+            {l s="%payment_gateway_name% Full Refund" sprintf=['%payment_gateway_name%' => $payment_gateway_name] d="Modules.latitudeofficial.Admin"}
             {if $total_paid > $available_amount}
-                {l s="(Gateway refund only)" d="Modules.Latitude_Official.Admin"}
+                {l s="(Gateway refund only)" d="Modules.latitudeofficial.Admin"}
             {/if}
         </span>
         <div id="latitudeRefundBox" style="display: none;">
-            <input name="refund_amount" type="text" placeholder="Refund amount" value="{l s=$available_amount d="Modules.Latitude_Official.Admin"}"
-                   data-maximum="{l s=$available_amount d="Modules.Latitude_Official.Admin"}" readonly>
+            <input name="refund_amount" type="text" placeholder="Refund amount" value="{l s=$available_amount d="Modules.latitudeofficial.Admin"}"
+                   data-maximum="{l s=$available_amount d="Modules.latitudeofficial.Admin"}" readonly>
             <button class="btn  btn-refund" style="margin: 0 2px; border: 1px #ccc solid"
-                    data-return_url="{$refund_url}" data-query="{$query_data}">{l s="Refund" d="Modules.Latitude_Official.Admin"}
+                    data-return_url="{$refund_url}" data-query="{$query_data}">{l s="Refund" d="Modules.latitudeofficial.Admin"}
             </button>
-            <button class="btn btn-cancel" style="border: 1px #ccc solid">{l s="Cancel" d="Modules.Latitude_Official.Admin"}</button>
+            <button class="btn btn-cancel" style="border: 1px #ccc solid">{l s="Cancel" d="Modules.latitudeofficial.Admin"}</button>
         </div>
     </div>
     <script type="text/html" id="LatitudePayParitalRefundTemplate">
@@ -28,7 +28,7 @@
                 <div class="md-checkbox md-checkbox-inline">
                     <label><input type="checkbox" id="doPartialRefundLatitude" name="doPartialRefundLatitude"
                                   material_design="material_design" value="1">
-                        <i class="md-checkbox-control"></i>{l s="Refund %payment_gateway_name%" sprintf=["%payment_gateway_name%" => $payment_gateway_name] d="Modules.Latitude_Official.Admin"}</label>
+                        <i class="md-checkbox-control"></i>{l s="Refund %payment_gateway_name%" sprintf=["%payment_gateway_name%" => $payment_gateway_name] d="Modules.latitudeofficial.Admin"}</label>
                 </div>
             </div>
         </div>

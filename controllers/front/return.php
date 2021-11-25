@@ -1,12 +1,12 @@
 <?php
 /**
- * Class latitude_officialreturnModuleFrontController
+ * Class latitudeofficialreturnModuleFrontController
  *  @author    Latitude Finance
  *  @copyright Latitude Finance
  *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  */
 
-class latitude_OfficialReturnModuleFrontController extends ModuleFrontController
+class latitudeofficialReturnModuleFrontController extends ModuleFrontController
 {
     public $display_column_left = false;
 
@@ -35,7 +35,7 @@ class latitude_OfficialReturnModuleFrontController extends ModuleFrontController
         // Add the validation
         $reference = Tools::getValue('reference');
 
-        if (Configuration::get(Latitude_Official::LATITUDE_FINANCE_DEBUG_MODE)) {
+        if (Configuration::get(latitudeofficial::LATITUDE_FINANCE_DEBUG_MODE)) {
             $logMessage = "======CALLBACK INFO STARTS======\n";
             $logMessage .= json_encode(Tools::getAllValues(), JSON_PRETTY_PRINT);
             $logMessage .= "\n======CALLBACK INFO ENDS======";

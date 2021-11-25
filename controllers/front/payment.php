@@ -1,12 +1,12 @@
 <?php
 /**
- *  Class latitude_officialpaymentModuleFrontController
+ *  Class latitudeofficialpaymentModuleFrontController
  *  @author    Latitude Finance
  *  @copyright Latitude Finance
  *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  */
 
-class latitude_OfficialPaymentModuleFrontController extends ModuleFrontController
+class latitudeofficialPaymentModuleFrontController extends ModuleFrontController
 {
     public $ssl = false;
     public $display_column_left = false;
@@ -14,7 +14,7 @@ class latitude_OfficialPaymentModuleFrontController extends ModuleFrontControlle
     /**
      * @var string
      */
-    protected $returnUrl = '/module/latitude_official/return';
+    protected $returnUrl = '/module/latitudeofficial/return';
 
     /**
      * @var boolean
@@ -119,7 +119,7 @@ class latitude_OfficialPaymentModuleFrontController extends ModuleFrontControlle
             );
 
             if ($this->debug) {
-                PrestaShopLogger::addLog('latitude_officialpaymentModuleFrontController::getPurchaseUrl - Function called.' . json_encode($payment), 1, null, 'PaymentModule', (int)$cart->id, true);
+                PrestaShopLogger::addLog('latitudeofficialpaymentModuleFrontController::getPurchaseUrl - Function called.' . json_encode($payment), 1, null, 'PaymentModule', (int)$cart->id, true);
             }
 
             $response = $gateway->purchase($payment);
@@ -143,7 +143,7 @@ class latitude_OfficialPaymentModuleFrontController extends ModuleFrontControlle
 
     protected function getReturnUrl()
     {
-        return $this->context->link->getModuleLink('latitude_official', 'return', array(), Configuration::get('PS_SSL_ENABLED'));
+        return $this->context->link->getModuleLink('latitudeofficial', 'return', array(), Configuration::get('PS_SSL_ENABLED'));
     }
 
     /**

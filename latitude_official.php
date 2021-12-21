@@ -209,7 +209,7 @@ class Latitude_Official extends PaymentModule
          */
         $this->tab = 'payments_gateways';
 
-        $this->version = '1.2';
+        $this->version = '1.3';
         $this->author = 'Latitude Financial Services';
 
         /**

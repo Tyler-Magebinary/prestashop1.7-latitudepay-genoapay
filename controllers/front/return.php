@@ -41,7 +41,10 @@ class latitude_officialreturnModuleFrontController extends ModuleFrontController
             Tools::redirect(Context::getContext()->shop->getBaseURL(true));
         }
 
-        $cart = $this->context->cart;
+        /**
+         * @var Order
+         */
+        $order = Order::getByReference($this->context->cookie->reference)->getFirst();
         $responseState = Tools::getValue('result');
 
         // Verify payment token
@@ -49,12 +52,14 @@ class latitude_officialreturnModuleFrontController extends ModuleFrontController
         $this->context->cookie->payment_token = null;
         if ($token !== Tools::getValue('token')) {
             $this->errors[] = Context::getContext()->getTranslator()->trans("Invalid payment token.");
+            $this->recreatCart($order);
             $this->redirectWithNotifications('index.php?controller=order&step=1');
         }
 
         // Verify signature
         if (!$this->validateSignature($gatewayName)) {
             $this->errors[] = Context::getContext()->getTranslator()->trans("Invalid response signature.");
+            $this->recreatCart($order);
             $this->redirectWithNotifications('index.php?controller=order&step=1');
         }
 
@@ -62,34 +67,35 @@ class latitude_officialreturnModuleFrontController extends ModuleFrontController
         $verifyCartAmount = $this->context->cookie->cart_amount;
         $this->context->cookie->cart_amount = null;
 
-        if ( $verifyCartAmount && $verifyCartAmount != $cart->getOrderTotal() ) {
-            $this->errors[] = Context::getContext()->getTranslator()->trans("Invalid cart amount.");
-            $this->redirectWithNotifications('index.php?controller=order&step=1');
+        if ( $verifyCartAmount && $verifyCartAmount != $order->total_paid ) {
+            $order->addOrderPayment($verifyCartAmount, $gatewayName, $token);
+            $order->setCurrentState(self::PAYMENT_ERROR);
+            $this->errors[] = Context::getContext()->getTranslator()
+                ->trans(
+                    "There was an issue with your purchased cart amount," .
+                    "please contact our administrator for further information!"
+                );
+            $this->recreatCart($order);
+            $this->redirectWithNotifications('index.php?controller=cart&action=show');
         }
 
         // success
         if (in_array($responseState, self::PAYMENT_SUCCESS_STATES)) {
-            $this->module->validateOrder(
-                $cart->id,
-                self::PAYMENT_ACCEPECTED,
-                $cart->getOrderTotal(),
-                $gatewayName,
-                '',
-                array(
-                    'transaction_id' => Tools::getValue('token')
-                )
-            );
+            $order->addOrderPayment($order->total_paid, null, $token);
+            $order->setCurrentState(self::PAYMENT_ACCEPECTED);
         } else {
-            $this->errors[] = Context::getContext()->getTranslator()->trans("Your purchase order has been cancelled.");
-            $this->redirectWithNotifications('index.php?controller=order&step=1');
+            $this->errors[] = Context::getContext()->getTranslator()
+                ->trans("Your purchase order has been cancelled.");
+            $this->recreatCart($order);
+            $this->redirectWithNotifications('index.php?controller=cart&action=show');
         }
 
-        $customer = new Customer($cart->id_customer);
+        $customer = new Customer($order->id_customer);
 
         if (!Validate::isLoadedObject($customer))
             Tools::redirect('index.php?controller=order&step=1');
 
-        Tools::redirect('index.php?controller=order-confirmation&id_cart='. (int)$cart->id. '&id_module=' . (int)$this->module->id . '&id_order=' . $this->module->currentOrder. '&key=' . $customer->secure_key);
+        Tools::redirect('index.php?controller=order-confirmation&id_cart='. (int)$order->id_cart. '&id_module=' . (int)$this->module->id . '&id_order=' . $this->module->currentOrder. '&key=' . $customer->secure_key);
     }
 
     /**
@@ -135,4 +141,10 @@ class latitude_officialreturnModuleFrontController extends ModuleFrontController
         $signature = hash_hmac( 'sha256', base64_encode( $gluedString ), $gateway->getConfig( 'password' ) );
         return $signature === Tools::getValue('signature');
     }
+
+    private function recreatCart($order) {
+        $this->context->cart = new Cart($order->id_cart);
+        $this->context->cookie->id_cart = $order->id_cart;
+    }
+
 }

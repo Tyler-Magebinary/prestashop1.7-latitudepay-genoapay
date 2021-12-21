@@ -27,6 +27,8 @@ class latitude_officialreturnModuleFrontController extends ModuleFrontController
         parent::initContent();
         // Add the validation
         $reference = Tools::getValue('reference');
+        $currencyCode = $this->context->currency->iso_code;
+        $gatewayName = $this->module->getPaymentGatewayNameByCurrencyCode($currencyCode);
 
         if (Configuration::get(Latitude_Official::LATITUDE_FINANCE_DEBUG_MODE)) {
             $logMessage = "======CALLBACK INFO STARTS======\n";
@@ -40,12 +42,33 @@ class latitude_officialreturnModuleFrontController extends ModuleFrontController
         }
 
         $cart = $this->context->cart;
-        $response = Tools::getAllValues();
         $responseState = Tools::getValue('result');
+
+        // Verify payment token
+        $token = $this->context->cookie->payment_token;
+        $this->context->cookie->payment_token = null;
+        if ($token !== Tools::getValue('token')) {
+            $this->errors[] = Context::getContext()->getTranslator()->trans("Invalid payment token.");
+            $this->redirectWithNotifications('index.php?controller=order&step=1');
+        }
+
+        // Verify signature
+        if (!$this->validateSignature($gatewayName)) {
+            $this->errors[] = Context::getContext()->getTranslator()->trans("Invalid response signature.");
+            $this->redirectWithNotifications('index.php?controller=order&step=1');
+        }
+
+        // Verify cart amount
+        $verifyCartAmount = $this->context->cookie->cart_amount;
+        $this->context->cookie->cart_amount = null;
+
+        if ( $verifyCartAmount && $verifyCartAmount != $cart->getOrderTotal() ) {
+            $this->errors[] = Context::getContext()->getTranslator()->trans("Invalid cart amount.");
+            $this->redirectWithNotifications('index.php?controller=order&step=1');
+        }
+
         // success
         if (in_array($responseState, self::PAYMENT_SUCCESS_STATES)) {
-            $currencyCode = $this->context->currency->iso_code;
-            $gatewayName = $this->module->getPaymentGatewayNameByCurrencyCode($currencyCode);
             $this->module->validateOrder(
                 $cart->id,
                 self::PAYMENT_ACCEPECTED,
@@ -85,5 +108,31 @@ class latitude_officialreturnModuleFrontController extends ModuleFrontController
                 break;
         }
         return $message;
+    }
+
+    /**
+     * Check if response signature is valid
+     * @param $gatewayName
+     * @param $request
+     * @return bool
+     */
+    private function validateSignature($gatewayName)
+    {
+        /**
+         * @var BinaryPay $gateway
+         */
+        $gateway = $this->module->getGateway($gatewayName);
+        $gluedString = $gateway->recursiveImplode(
+            array(
+                'token' => Tools::getValue('token'),
+                'reference' => $this->context->cookie->reference,
+                'message' => Tools::getValue('message'),
+                'result' => Tools::getValue('result'),
+            ),
+            '',
+            true
+        );
+        $signature = hash_hmac( 'sha256', base64_encode( $gluedString ), $gateway->getConfig( 'password' ) );
+        return $signature === Tools::getValue('signature');
     }
 }

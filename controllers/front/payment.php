@@ -67,14 +67,6 @@ class latitude_officialpaymentModuleFrontController extends ModuleFrontControlle
      */
     public function getPurchaseUrl()
     {
-        /**
-         * Give a default value of the purchase URL
-         * @fix Notice: Undefined variable: purchaseUrl in /var/www/html/modules/latitude_official/controllers/front/payment.php on line 163 when an exception throws
-         * @var string
-         */
-        $purchaseUrl = '';
-        $serializeCartObject = serialize($this->context->cart);
-
         try {
             $cookie = $this->getCookie();
             $currency   = $this->context->currency;
@@ -93,6 +85,7 @@ class latitude_officialpaymentModuleFrontController extends ModuleFrontControlle
             $amount     = $cart->getOrderTotal();
             $customer   = $this->context->customer;
             $address    = new Address($cart->id_address_delivery);
+            $cookie->cart_amount = $amount;
 
             $payment = array(
                 BinaryPay_Variable::REFERENCE                => (string) $reference,
@@ -125,6 +118,7 @@ class latitude_officialpaymentModuleFrontController extends ModuleFrontControlle
             }
 
             $response = $gateway->purchase($payment);
+            $cookie->payment_token = $response['token'] ?? null;
             $purchaseUrl = $this->module->getConfigData('paymentUrl', $response);
         } catch (BinaryPay_Exception $e) {
             BinaryPay::log($e->getMessage(), true, 'prestashop-latitude-finance.log');

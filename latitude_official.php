@@ -1430,9 +1430,12 @@ class Latitude_Official extends PaymentModule
      * @return bool
      */
     private function shouldDisplayPaymentTerms() {
+        if (Configuration::get(self::LATITUDE_FINANCE_TITLE) === self::GENOAPAY_PAYMENT_METHOD_CODE) {
+            return false;
+        }
         return in_array(Tools::getValue(self::LATITUDE_FINANCE_PRODUCT), [
             self::PRODUCT_LPAYPLUS, self::PRODUCT_CO_PRESENTMENT
-        ]) || Configuration::get(self::LATITUDE_FINANCE_TITLE) === self::GENOAPAY_PAYMENT_METHOD_CODE;
+        ]);
     }
 
     /**

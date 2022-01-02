@@ -41,10 +41,7 @@ class latitude_officialreturnModuleFrontController extends ModuleFrontController
             Tools::redirect(Context::getContext()->shop->getBaseURL(true));
         }
 
-        /**
-         * @var Order
-         */
-        $order = Order::getByReference($this->context->cookie->reference)->getFirst();
+        $cart = $this->context->cart;
         $responseState = Tools::getValue('result');
 
         // Verify payment token
@@ -52,50 +49,49 @@ class latitude_officialreturnModuleFrontController extends ModuleFrontController
         $this->context->cookie->payment_token = null;
         if ($token !== Tools::getValue('token')) {
             $this->errors[] = Context::getContext()->getTranslator()->trans("Invalid payment token.");
-            $this->recreatCart($order);
-            $this->redirectWithNotifications('index.php?controller=order&step=1');
+            Tools::redirect('index.php?controller=order&step=1');
         }
 
         // Verify signature
         if (!$this->validateSignature($gatewayName)) {
             $this->errors[] = Context::getContext()->getTranslator()->trans("Invalid response signature.");
-            $this->recreatCart($order);
-            $this->redirectWithNotifications('index.php?controller=order&step=1');
-        }
-
-        // Verify cart amount
-        $verifyCartAmount = $this->context->cookie->cart_amount;
-        $this->context->cookie->cart_amount = null;
-
-        if ( $verifyCartAmount && $verifyCartAmount != $order->total_paid ) {
-            $order->addOrderPayment($verifyCartAmount, $gatewayName, $token);
-            $order->setCurrentState(self::PAYMENT_ERROR);
-            $this->errors[] = Context::getContext()->getTranslator()
-                ->trans(
-                    "There was an issue with your purchased cart amount," .
-                    "please contact our administrator for further information!"
-                );
-            $this->recreatCart($order);
-            $this->redirectWithNotifications('index.php?controller=cart&action=show');
+            Tools::redirect('index.php?controller=order&step=1');
         }
 
         // success
         if (in_array($responseState, self::PAYMENT_SUCCESS_STATES)) {
-            $order->addOrderPayment($order->total_paid, null, $token);
-            $order->setCurrentState(self::PAYMENT_ACCEPECTED);
+            $verifyCartAmount = floatval($this->context->cookie->__get('cart_amount'));
+            if (!$verifyCartAmount) {
+                $this->context->cookie->__set('latitude_finance_redirect_error', $this->translateErrorMessage("Your order was placed already."));
+                Tools::redirect('index.php?controller=order&step=1');
+            }
+            $this->context->cookie->__unset('cart_amount');
+            $orderAmount = $cart->getOrderTotal();
+            $this->module->validateOrder(
+                $cart->id,
+                $verifyCartAmount< $orderAmount ? self::PAYMENT_ERROR : self::PAYMENT_ACCEPECTED,
+                $verifyCartAmount,
+                $gatewayName,
+                $verifyCartAmount < $orderAmount ?
+                    sprintf(
+                        'Invalid payment amount detected! Correct amount: %s, paid: %s',
+                        $verifyCartAmount,
+                        $orderAmount
+                    ) : '',
+                [ 'transaction_id' => Tools::getValue('token') ]
+            );
         } else {
             $this->errors[] = Context::getContext()->getTranslator()
                 ->trans("Your purchase order has been cancelled.");
-            $this->recreatCart($order);
-            $this->redirectWithNotifications('index.php?controller=cart&action=show');
+            Tools::redirect('index.php?controller=cart&action=show');
         }
 
-        $customer = new Customer($order->id_customer);
+        $customer = new Customer($cart->id_customer);
 
         if (!Validate::isLoadedObject($customer))
             Tools::redirect('index.php?controller=order&step=1');
 
-        Tools::redirect('index.php?controller=order-confirmation&id_cart='. (int)$order->id_cart. '&id_module=' . (int)$this->module->id . '&id_order=' . $this->module->currentOrder. '&key=' . $customer->secure_key);
+        Tools::redirect('index.php?controller=order-confirmation&id_cart='. (int)$cart->id. '&id_module=' . (int)$this->module->id . '&id_order=' . $this->module->currentOrder. '&key=' . $customer->secure_key);
     }
 
     /**

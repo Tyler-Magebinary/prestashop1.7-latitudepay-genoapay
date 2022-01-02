@@ -188,7 +188,8 @@ class Latitude_Official extends PaymentModule
         'displayAdminOrderTabContent',
         'actionOrderSlipAdd',
         'displayBackOfficeHeader',
-        'displayExpressCheckout'
+        'displayExpressCheckout',
+        'actionObjectAddBefore'
     );
 
     /**
@@ -471,6 +472,26 @@ class Latitude_Official extends PaymentModule
             }
         } catch (Exception $exception) {
             return "";
+        }
+    }
+
+    /**
+     * Assign the generated order reference to new order
+     * @param $params
+     * @return void
+     */
+    public function hookActionObjectAddBefore($params)
+    {
+        $order = $params['object'];
+        if ($order instanceof Order) {
+            $cookie = $this->context->cookie;
+            $reservedReference = $cookie->__get('lpay_reserve_order_reference');
+            $cartId = $cookie->__get('lpay_reserve_order_cart_id');
+            if ( $reservedReference && $cartId && $cartId == $order->id_cart ) {
+                $order->reference = $reservedReference;
+                $cookie->__unset('lpay_reserve_order_reference');
+                $cookie->__unset('lpay_reserve_order_cart_id');
+            }
         }
     }
 

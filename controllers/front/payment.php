@@ -77,10 +77,11 @@ class latitude_officialpaymentModuleFrontController extends ModuleFrontControlle
                 return false;
             }
 
-            $cart       = $this->context->cart;
-            $reference  = $this->getReferenceNumber($cart, $paymentGatewayName);
+            $reference  = $this->getReferenceNumber();
+            // Save the reference for validation when response coming back from
             $cookie->reference = $reference;
 
+            $cart       = $this->context->cart;
             $amount     = $cart->getOrderTotal();
             $customer   = $this->context->customer;
             $address    = new Address($cart->id_address_delivery);
@@ -145,19 +146,12 @@ class latitude_officialpaymentModuleFrontController extends ModuleFrontControlle
      * This is how prestashop generate the next order referece number
      * @return string
      */
-    protected function getReferenceNumber($cart, $gatewayName)
+    protected function getReferenceNumber()
     {
-        $this->module->validateOrder(
-            $cart->id,
-            1,
-            0,
-            $gatewayName
-        );
-        $order = Order::getByCartId($cart->id);
-        if ($order) {
-            return $order->reference;
-        }
-        return null;
+        do {
+            $reference = Order::generateReference();
+        } while (Order::getByReference($reference)->count());
+        return $reference;
     }
 
     /**

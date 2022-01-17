@@ -6,8 +6,8 @@ class latitude_officialreturnModuleFrontController extends ModuleFrontController
     /**
      * @var integer - Order state
      */
-    const PAYMENT_ACCEPECTED = 2;
-    const PAYMENT_ERROR = 8;
+    const PAYMENT_ACCEPTED = 2;
+    const PAYMENT_IN_PROGRESS = 3;
 
     const PAYMENT_SUCCESS_STATES = [
         'COMPLETED'
@@ -67,20 +67,29 @@ class latitude_officialreturnModuleFrontController extends ModuleFrontController
             }
             $this->context->cookie->__unset('cart_amount');
             $orderAmount = $cart->getOrderTotal();
+            $isInvalidAmount = $verifyCartAmount < $orderAmount;
+            $orderMessage = $isInvalidAmount ?
+                sprintf(
+                    'Invalid payment amount detected! Correct amount: %s, paid: %s, token: %s',
+                    $verifyCartAmount,
+                    $orderAmount,
+                    $token
+                ) : '';
             $this->module->validateOrder(
                 $cart->id,
-                $verifyCartAmount< $orderAmount ? self::PAYMENT_ERROR : self::PAYMENT_ACCEPECTED,
+                $isInvalidAmount ? self::PAYMENT_IN_PROGRESS : self::PAYMENT_ACCEPTED,
                 $verifyCartAmount,
                 $gatewayName,
-                $verifyCartAmount < $orderAmount ?
-                    sprintf(
-                        'Invalid payment amount detected! Correct amount: %s, paid: %s, token: %s',
-                        $verifyCartAmount,
-                        $orderAmount,
-                        $token
-                    ) : '',
+                $orderMessage,
                 [ 'transaction_id' => Tools::getValue('token') ]
             );
+            if ($isInvalidAmount) {
+                $this->context->cookie->__set(
+                    'latitude_finance_redirect_error',
+                    $this->translateErrorMessage("There was an issue with your order, please contact administrator for more information.")
+                );
+                Tools::redirect('index.php?controller=order&step=1');
+            }
         } else {
             $this->errors[] = Context::getContext()->getTranslator()
                 ->trans("Your purchase order has been cancelled.");
@@ -138,10 +147,4 @@ class latitude_officialreturnModuleFrontController extends ModuleFrontController
         $signature = hash_hmac( 'sha256', base64_encode( $gluedString ), $gateway->getConfig( 'password' ) );
         return $signature === Tools::getValue('signature');
     }
-
-    private function recreatCart($order) {
-        $this->context->cart = new Cart($order->id_cart);
-        $this->context->cookie->id_cart = $order->id_cart;
-    }
-
 }

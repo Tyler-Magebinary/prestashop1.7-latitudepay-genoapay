@@ -440,11 +440,14 @@ class Latitude_Official extends PaymentModule
 
     public function hookDisplayExpressCheckout($params) {
         try {
+            if (!$this->isValidCurrency()) {
+                return "";
+            }
             $cart = isset($params['cart']) ? $params['cart'] : null;
             if ($cart) {
                 $price = $cart->getOrderTotal();
                 if ($price >= $this->getMinOrderTotal()) {
-                    $currency = $this->getCorrectCurrency();
+                    $currency = $this->context->currency;
                     if (!$currency) {
                         return '';
                     }
@@ -586,8 +589,7 @@ class Latitude_Official extends PaymentModule
     /**
      * Get payment gateway name base on currency code
      * @param null $currencyCode
-     * @return string
-     * @throws Exception
+     * @return string|bool
      */
     public function getPaymentGatewayNameByCurrencyCode($currencyCode = null)
     {
@@ -665,7 +667,7 @@ class Latitude_Official extends PaymentModule
      */
     public function hookPaymentOptions($params)
     {
-        $currency = $this->getCorrectCurrency();
+        $currency = $this->context->currency;
         if ($currency) {
             $cartAmount = $params['cart']->getOrderTotal();
             $this->gatewayName = $this->getPaymentGatewayNameByCurrencyCode($currency->iso_code);
@@ -743,11 +745,12 @@ class Latitude_Official extends PaymentModule
         ) {
             return "";
         }
-        $currency = $this->getCorrectCurrency();
 
-        if (!$currency) {
-            return ""; // Currencies are different between backend and frontend
+        if (!$this->isValidCurrency()) {
+            return "";
         }
+
+        $currency = $this->context->currency;
 
         /** @var \PrestaShop\PrestaShop\Adapter\Presenter\Product\ProductLazyArray $product */
         $product = $params['product'];
@@ -952,6 +955,12 @@ class Latitude_Official extends PaymentModule
             ),
         );
 
+        if (Configuration::get(self::LATITUDE_FINANCE_TITLE) === self::GENOAPAY_PAYMENT_METHOD_CODE) {
+            $fields_form['form']['input'] = array_filter($fields_form['form']['input'], function($field) {
+                return $field['name'] !== self::LATITUDE_FINANCE_PRODUCT && $field['name'] !== self::LATITUDE_FINANCE_PAYMENT_TERMS;
+            });
+        }
+
         $helper = new HelperForm();
         $helper->show_toolbar = false;
         $helper->table = $this->table;
@@ -1140,7 +1149,7 @@ class Latitude_Official extends PaymentModule
      */
     protected function isOrderAmountAvailable($amount)
     {
-        if ($amount > $this->getMaxOrderTotal() || $amount < $this->getMinOrderTotal()) {
+        if ( $amount < $this->getMinOrderTotal() ) {
             return false;
         }
         return true;
@@ -1432,7 +1441,7 @@ class Latitude_Official extends PaymentModule
     private function shouldDisplayPaymentTerms() {
         return in_array(Tools::getValue(self::LATITUDE_FINANCE_PRODUCT), [
             self::PRODUCT_LPAYPLUS, self::PRODUCT_CO_PRESENTMENT
-        ]) || Configuration::get(self::LATITUDE_FINANCE_TITLE) === self::GENOAPAY_PAYMENT_METHOD_CODE;
+        ]) && Configuration::get(self::LATITUDE_FINANCE_TITLE) !== self::GENOAPAY_PAYMENT_METHOD_CODE;
     }
 
     /**
@@ -1445,18 +1454,17 @@ class Latitude_Official extends PaymentModule
     }
 
     /**
-     * Get the currency that is set from backend and frontend sites
-     * @return bool|Currency
+     * Check if the current currency is valid with the configured value
+     * @return bool
      */
-    private function getCorrectCurrency()
+    protected function isValidCurrency()
     {
-        $defaultCurrency = Configuration::get('PS_CURRENCY_DEFAULT');
-        $selectedCurrency = $this->context->currency;
-        if (
-            $defaultCurrency == $selectedCurrency->id
-        ) {
-            return $selectedCurrency;
+        $currency = $this->context->currency;
+        if (!$currency) {
+            $currency = Configuration::get('PS_CURRENCY_DEFAULT');
         }
-        return false;
+        $gateway = $this->getPaymentGatewayNameByCurrencyCode($currency->iso_code);
+        $configuredGateway = Configuration::get('LATITUDE_FINANCE_TITLE');
+        return strtolower($gateway) === strtolower($configuredGateway);
     }
 }

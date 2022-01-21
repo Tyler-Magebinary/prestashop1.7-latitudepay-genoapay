@@ -618,9 +618,14 @@ class Latitude_Official extends PaymentModule
          * If the currency object still not initialized then use the country object as the default setting
          */
         if (!$currencyCode) {
-            $currencyId = Configuration::get('PS_CURRENCY_DEFAULT');
-            $currency = new Currency($currencyId);
-            $currencyCode = $currency->iso_code;
+            if (!$this->context->currency) {
+                $currencyId = Configuration::get('PS_CURRENCY_DEFAULT');
+                $currency = new Currency($currencyId);
+                $currencyCode = $currency->iso_code;
+            } else {
+                $currencyCode = $this->context->currency->iso_code;
+            }
+
         }
 
         $this->gatewayName = $gatewayName = '';
